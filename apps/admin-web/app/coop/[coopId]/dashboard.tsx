@@ -6,6 +6,7 @@ import { fmtNaira } from '@/lib/format';
 import { useParams } from 'next/navigation';
 
 import { ContributionForm } from './contribution-form';
+import Link from 'next/link';
 
 export function CoopDashboard() {
   const params = useParams<{ coopId: string }>();
@@ -28,6 +29,16 @@ export function CoopDashboard() {
   return (
     <div className="max-w-5xl mx-auto p-8 space-y-6">
       <h1 className="text-2xl font-semibold">Coop Savings</h1>
+      <div className="flex gap-2">
+        <Link
+          href={`/coop/${coopId}/loans`}
+          className="text-sm bg-white px-4 py-2 rounded shadow hover:shadow-md"
+        >
+          Manage Loans →
+        </Link>
+      </div>
+
+
       <ContributionForm coopId={coopId} members={members} />
 
       <div className="grid grid-cols-3 gap-4">

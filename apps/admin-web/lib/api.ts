@@ -23,4 +23,31 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
+
+  listLoans: (coopId: string, status?: string) =>
+    request<any[]>(
+      `/coops/${coopId}/loans${status ? `?status=${status}` : ''}`,
+    ),
+  applyForLoan: (
+    coopId: string,
+    body: {
+      member_id: string;
+      principal_kobo: number;
+      interest_rate: number;
+      term_months: number;
+    },
+  ) =>
+    request<any>(`/coops/${coopId}/loans`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  approveLoan: (coopId: string, loanId: string) =>
+    request<any>(`/coops/${coopId}/loans/${loanId}/approve`, { method: 'POST' }),
+  rejectLoan: (coopId: string, loanId: string, reason: string) =>
+    request<any>(`/coops/${coopId}/loans/${loanId}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    }),
+  disburseLoan: (coopId: string, loanId: string) =>
+    request<any>(`/coops/${coopId}/loans/${loanId}/disburse`, { method: 'POST' }),
 };
