@@ -42,6 +42,18 @@ export function LoansView() {
     onSuccess: invalidate,
   });
 
+  const repay = useMutation({
+    mutationFn: ({
+      member_id,
+      amount_kobo,
+    }: {
+      member_id: string;
+      amount_kobo: number;
+    }) => api.repayLoan(coopId, { member_id, amount_kobo }),
+    onSuccess: invalidate,
+  });
+
+
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-8 space-y-4">
       <h1 className="text-2xl font-semibold">Loans</h1>
@@ -108,6 +120,7 @@ export function LoansView() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+
                         <LoanActions
                           loan={l}
                           onApprove={() => approve.mutate(l.id)}
@@ -116,10 +129,24 @@ export function LoansView() {
                             if (reason) reject.mutate({ id: l.id, reason });
                           }}
                           onDisburse={() => disburse.mutate(l.id)}
+                          onRepay={() => {
+                            const amount = prompt(
+                              `Repayment amount in ₦ (loan: ${fmtNaira(l.principal_kobo)}):`,
+                            );
+                            if (amount) {
+                              repay.mutate({
+                                member_id: l.member_id,
+                                amount_kobo: Math.round(parseFloat(amount) * 100),
+                              });
+                            }
+                          }}
                           approvePending={approve.isPending}
                           rejectPending={reject.isPending}
                           disbursePending={disburse.isPending}
                         />
+
+
+
                       </div>
                     </td>
                   </tr>
@@ -149,17 +176,31 @@ export function LoansView() {
                   </div>
                   <div className="flex justify-end gap-2 pt-1">
                     <LoanActions
-                      loan={l}
-                      onApprove={() => approve.mutate(l.id)}
-                      onReject={() => {
-                        const reason = prompt('Rejection reason:');
-                        if (reason) reject.mutate({ id: l.id, reason });
-                      }}
-                      onDisburse={() => disburse.mutate(l.id)}
-                      approvePending={approve.isPending}
-                      rejectPending={reject.isPending}
-                      disbursePending={disburse.isPending}
-                    />
+                          loan={l}
+                          onApprove={() => approve.mutate(l.id)}
+                          onReject={() => {
+                            const reason = prompt('Rejection reason:');
+                            if (reason) reject.mutate({ id: l.id, reason });
+                          }}
+                          onDisburse={() => disburse.mutate(l.id)}
+                          onRepay={() => {
+                            const amount = prompt(
+                              `Repayment amount in ₦ (loan: ${fmtNaira(l.principal_kobo)}):`,
+                            );
+                            if (amount) {
+                              repay.mutate({
+                                member_id: l.member_id,
+                                amount_kobo: Math.round(parseFloat(amount) * 100),
+                              });
+                            }
+                          }}
+                          approvePending={approve.isPending}
+                          rejectPending={reject.isPending}
+                          disbursePending={disburse.isPending}
+                        />
+
+
+
                   </div>
                 </div>
               ))}
@@ -176,6 +217,7 @@ function LoanActions({
   onApprove,
   onReject,
   onDisburse,
+  onRepay,
   approvePending,
   rejectPending,
   disbursePending,
@@ -184,6 +226,7 @@ function LoanActions({
   onApprove: () => void;
   onReject: () => void;
   onDisburse: () => void;
+  onRepay: () => void;
   approvePending: boolean;
   rejectPending: boolean;
   disbursePending: boolean;
@@ -217,6 +260,17 @@ function LoanActions({
         className="inline-flex items-center justify-center rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {disbursePending ? 'Disbursing…' : 'Disburse'}
+      </button>
+    );
+  }
+
+  if (loan.status === 'disbursed') {
+    return (
+      <button
+        onClick={onRepay}
+        className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-800 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
+      >
+        Record Repayment
       </button>
     );
   }

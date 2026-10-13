@@ -50,4 +50,15 @@ export const api = {
     }),
   disburseLoan: (coopId: string, loanId: string) =>
     request<any>(`/coops/${coopId}/loans/${loanId}/disburse`, { method: 'POST' }),
+   
+  repayLoan: (
+    coopId: string,
+    body: { member_id: string; amount_kobo: number },
+  ) =>
+    request<any>(`/coops/${coopId}/loans/repay`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+
 };
