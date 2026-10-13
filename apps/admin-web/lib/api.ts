@@ -15,4 +15,12 @@ export const api = {
   listMembers: (coopId: string) => request<any[]>(`/coops/${coopId}/members`),
   getMemberBalance: (coopId: string, memberId: string) =>
     request<any>(`/coops/${coopId}/members/${memberId}/balance`),
+  recordContribution: (
+    coopId: string,
+    body: { member_id: string; amount_kobo: number },
+  ) =>
+    request<any>(`/coops/${coopId}/contributions`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 };

@@ -5,6 +5,8 @@ import { api } from '@/lib/api';
 import { fmtNaira } from '@/lib/format';
 import { useParams } from 'next/navigation';
 
+import { ContributionForm } from './contribution-form';
+
 export function CoopDashboard() {
   const params = useParams<{ coopId: string }>();
   const coopId = params.coopId;
@@ -26,6 +28,7 @@ export function CoopDashboard() {
   return (
     <div className="max-w-5xl mx-auto p-8 space-y-6">
       <h1 className="text-2xl font-semibold">Coop Savings</h1>
+      <ContributionForm coopId={coopId} members={members} />
 
       <div className="grid grid-cols-3 gap-4">
         <Metric label="Members" value={String(summary.member_count)} />
